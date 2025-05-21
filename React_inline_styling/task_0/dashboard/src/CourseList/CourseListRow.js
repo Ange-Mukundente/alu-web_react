@@ -1,42 +1,52 @@
 import React from 'react';
-import { shallow } from 'enzyme';
-import CourseList from './CourseList';
-import CourseListRow from './CourseListRow';
+import PropTypes from 'prop-types';
+import './CourseList.css';
 
-const listCourses = [
-    { id: 1, name: 'ES6', credit: 60 },
-    { id: 2, name: 'Webpack', credit: 20 },
-    { id: 3, name: 'React', credit: 40 },
-];
+const rowStyle = {
+    backgroundColor: '#f5f5f5ab',
+};
 
-describe('<CourseList />', () => {
-    it('renders an <CourseList /> component', () => {
-        const wrapper = shallow(<CourseList />);
-        expect(wrapper).toHaveLength(1);
-        const wrapperTwo = shallow(<CourseList listCourses={ [] } />);
-        expect(wrapperTwo).toHaveLength(1);
-    });
+const headerRowStyle = {
+    backgroundColor: '#deb5b545',
+}
 
-    it('renders a <CourseList /> component and verifies 5 rows', () => {
-        const wrapper = shallow(<CourseList listCourses={ listCourses } />);
-        expect(wrapper.find(CourseListRow)).toHaveLength(5);
-        expect(wrapper.find(CourseListRow).get(0).props.textFirstCell).toEqual('Available courses');
-        expect(wrapper.find(CourseListRow).get(0).props.isHeader).toBe(true);
+function CourseListRow({ isHeader, textFirstCell, textSecondCell }) {
+    return (
+        <>
+            <tr style={isHeader ? headerRowStyle : rowStyle}>
+                { isHeader && !textSecondCell && (
+                    <th colSpan={ 2 }>{ textFirstCell }</th>
+                ) }
+                { isHeader && textSecondCell && (
+                    <>
+                        <th>{ textFirstCell }</th>
+                        <th>{ textSecondCell }</th>
+                    </>
+                ) }
+                { !isHeader && (
+                    <>
+                        <td>{ textFirstCell }</td>
+                        <td>{ textSecondCell }</td>
+                    </>
+                ) }
+            </tr>
+        </>
+    );
+}
 
-        expect(wrapper.find(CourseListRow).get(1).props.textFirstCell).toEqual('Course name');
-        expect(wrapper.find(CourseListRow).get(1).props.textSecondCell).toEqual('Credit');
-        expect(wrapper.find(CourseListRow).get(1).props.isHeader).toBe(true);
+CourseListRow.propTypes = {
+    isHeader: PropTypes.bool,
+    textFirstCell: PropTypes.string.isRequired,
+    textSecondCell: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.number
+    ]),
+};
 
-        expect(wrapper.find(CourseListRow).get(2).props.textFirstCell).toEqual('ES6');
-        expect(wrapper.find(CourseListRow).get(2).props.textSecondCell).toEqual(60);
-        expect(wrapper.find(CourseListRow).get(2).props.isHeader).toBe(false);
+CourseListRow.defaultProps = {
+    isHeader: false,
+    textFirstCell: "Holberton",
+    textSecondCell: null,
+};
 
-        expect(wrapper.find(CourseListRow).get(3).props.textFirstCell).toEqual('Webpack');
-        expect(wrapper.find(CourseListRow).get(3).props.textSecondCell).toEqual(20);
-        expect(wrapper.find(CourseListRow).get(3).props.isHeader).toBe(false);
-
-        expect(wrapper.find(CourseListRow).get(4).props.textFirstCell).toEqual('React');
-        expect(wrapper.find(CourseListRow).get(4).props.textSecondCell).toEqual(40);
-        expect(wrapper.find(CourseListRow).get(4).props.isHeader).toBe(false);
-    });
-});
+export default CourseListRow;
